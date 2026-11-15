@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-circuit="ion">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family Site</title>
+<meta name="description" content="Our family's home base: the roster, the photos, and every mission we've run.">
+<meta name="theme-color" content="#01040a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Family Site">
+<meta property="og:description" content="The roster, the photos, and every mission we've run.">
+<meta property="og:image" content="https://aarush35.github.io/family_site/assets/share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/michroma-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jura-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/site.css?v=1">
+<script>
+/* Apply saved deck choices before the first paint, and play the intro once per visit. */
+(function () {
+  var r = document.documentElement;
+  try {
+    var s = JSON.parse(localStorage.getItem("family-site:deck:v1") || "null");
+    if (s) {
+      if (/^(ion|ember|ultra|volt|halo)$/.test(s.circuit)) r.setAttribute("data-circuit", s.circuit);
+      if (typeof s.glow === "number") r.style.setProperty("--glow", Math.max(0, Math.min(150, s.glow)) / 100);
+      if (s.scan === true) r.setAttribute("data-scan", "on");
+    }
+  } catch (e) {}
+  try {
+    if (sessionStorage.getItem("family-site:intro")) r.classList.add("no-intro");
+    else sessionStorage.setItem("family-site:intro", "1");
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#roster">Skip to the roster</a>
+
+<div class="intro" id="intro" aria-hidden="true"><i class="intro-top"></i><i class="intro-bot"></i><i class="intro-line"></i></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="sweep" aria-hidden="true"></div>
+<canvas id="trail" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Back to the top">
+      <span class="brand-sigil" id="brand-sigil"></span>
+      <span class="brand-name" data-family></span>
+    </a>
+    <nav class="nav-wrap" aria-label="Sections">
+      <ul class="nav">
+        <li><a href="#roster">Roster</a></li>
+        <li><a href="#photos">Photos</a></li>
+        <li><a href="#missions">Missions</a></li>
+      </ul>
+    </nav>
+    <div class="bar-tools">
+      <button class="tool" type="button" data-act="console" aria-label="Open the console" title="Console ( / )">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 7l5 5-5 5M12 18h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+      </button>
+      <button class="tool tool-wide" type="button" data-act="deck" id="deck-btn" aria-expanded="false" aria-controls="deck" title="Control deck ( D )">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><path d="M13 5h4v4h-4zM7 10h4v4H7zM15 15h4v4h-4z" fill="currentColor"/></svg>
+        <span>Deck</span>
+      </button>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+</header>
+
+<main id="top">
+  <section class="hero" id="arena" aria-label="Arena">
+    <canvas id="grid" aria-hidden="true"></canvas>
+    <canvas id="bloom" aria-hidden="true"></canvas>
+    <div class="hero-sky">
+      <h1 class="sign lit" id="sign"></h1>
+      <div class="sign sign-mirror lit" id="sign-mirror" aria-hidden="true"></div>
+    </div>
+    <div class="hero-floor">
+      <p class="tagline" id="tagline"></p>
+      <div class="cta">
+        <button class="btn solid" type="button" data-act="deck"><span class="btn-face">Open the control deck</span></button>
+        <button class="btn" type="button" data-act="game"><span class="btn-face">Play trail duel</span></button>
+      </div>
+      <dl class="readouts" id="readouts"></dl>
+    </div>
+    <p class="floor-hint" id="floor-hint"></p>
+  </section>
+
+  <section class="section" id="roster" aria-labelledby="roster-h">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 id="roster-h">Roster</h2>
+        <span class="trace" aria-hidden="true"></span>
+        <p class="sec-note" id="roster-note"></p>
+      </header>
+      <ul class="roster" id="roster-list"></ul>
+    </div>
+  </section>
+
+  <section class="section" id="photos" aria-labelledby="photos-h">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 id="photos-h">Photos</h2>
+        <span class="trace" aria-hidden="true"></span>
+        <div class="seg" role="group" aria-label="Photo layout">
+          <button type="button" data-layout="grid" aria-pressed="true">Grid</button>
+          <button type="button" data-layout="reel" aria-pressed="false">Reel</button>
+        </div>
+      </header>
+      <p class="sec-lede" id="photos-note"></p>
+      <ul class="shots" id="shots" data-layout="grid"></ul>
+    </div>
+  </section>
+
+  <section class="section" id="missions" aria-labelledby="missions-h">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 id="missions-h">Mission log</h2>
+        <span class="trace" aria-hidden="true"></span>
+        <p class="sec-note" id="missions-note"></p>
+      </header>
+      <div class="board">
+        <dl class="tally" id="tally"></dl>
+        <div class="meter-wrap">
+          <div class="meter" id="meter"></div>
+          <p class="meter-key" id="meter-key"></p>
+        </div>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter missions by status"></div>
+      <ol class="log" id="log"></ol>
+      <p class="log-empty" id="log-empty" hidden>No missions with that status yet.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap foot">
+    <span class="foot-sigil" id="foot-sigil"></span>
+    <div class="foot-text">
+      <p>Built and deployed for Mission 7, Family Site.</p>
+      <p id="updated"></p>
+    </div>
+    <p class="foot-keys">Press <kbd>D</kbd> for the control deck, <kbd>/</kbd> for the console, <kbd>X</kbd> for a duel.</p>
+  </div>
+</footer>
+
+<!-- Control deck -->
+<aside class="deck" id="deck" role="dialog" aria-labelledby="deck-title">
+  <div class="plate deck-plate"><div class="plate-in deck-in">
+    <header class="deck-head">
+      <h2 class="deck-title" id="deck-title">Control deck</h2>
+      <button class="icon-btn" type="button" data-act="deck" aria-label="Close the control deck">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+      </button>
+    </header>
+    <div class="deck-body">
+      <fieldset class="deck-group">
+        <legend>Circuit <kbd>C</kbd></legend>
+        <div class="swatches">
+          <label class="swatch" style="--sw:#4de8ff"><input type="radio" name="circuit" id="circuit-ion" value="ion"><span class="swatch-chip" aria-hidden="true"></span><span class="swatch-name">Ion</span></label>
+          <label class="swatch" style="--sw:#ff8b2b"><input type="radio" name="circuit" id="circuit-ember" value="ember"><span class="swatch-chip" aria-hidden="true"></span><span class="swatch-name">Ember</span></label>
+          <label class="swatch" style="--sw:#b78aff"><input type="radio" name="circuit" id="circuit-ultra" value="ultra"><span class="swatch-chip" aria-hidden="true"></span><span class="swatch-name">Ultra</span></label>
+          <label class="swatch" style="--sw:#a6ff4d"><input type="radio" name="circuit" id="circuit-volt" value="volt"><span class="swatch-chip" aria-hidden="true"></span><span class="swatch-name">Volt</span></label>
+          <label class="swatch" style="--sw:#eef7ff"><input type="radio" name="circuit" id="circuit-halo" value="halo"><span class="swatch-chip" aria-hidden="true"></span><span class="swatch-name">Halo</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="deck-group">
+        <legend>Arena</legend>
+        <label class="sw" for="sw-motion"><span class="sw-text">Grid motion <kbd>G</kbd></span><input type="checkbox" role="switch" id="sw-motion" data-set="motion"><span class="sw-track" aria-hidden="true"></span></label>
+        <label class="sw" for="sw-waves"><span class="sw-text">Floor waves <kbd>W</kbd></span><input type="checkbox" role="switch" id="sw-waves" data-set="waves"><span class="sw-track" aria-hidden="true"></span></label>
+        <label class="sw" for="sw-runners"><span class="sw-text">Light runners <kbd>R</kbd></span><input type="checkbox" role="switch" id="sw-runners" data-set="runners"><span class="sw-track" aria-hidden="true"></span></label>
+        <label class="sw" for="sw-ceiling"><span class="sw-text">Ceiling grid</span><input type="checkbox" role="switch" id="sw-ceiling" data-set="ceiling"><span class="sw-track" aria-hidden="true"></span></label>
+        <div class="slider">
+          <label for="rg-speed">Speed</label><output id="out-speed" for="rg-speed"></output>
+          <input type="range" id="rg-speed" min="25" max="300" step="5" data-set="speed">
+        </div>
+      </fieldset>
+
+      <fieldset class="deck-group">
+        <legend>Screen</legend>
+        <label class="sw" for="sw-trail"><span class="sw-text">Cursor trail <kbd>T</kbd></span><input type="checkbox" role="switch" id="sw-trail" data-set="trail"><span class="sw-track" aria-hidden="true"></span></label>
+        <label class="sw" for="sw-scan"><span class="sw-text">Scanlines <kbd>L</kbd></span><input type="checkbox" role="switch" id="sw-scan" data-set="scan"><span class="sw-track" aria-hidden="true"></span></label>
+        <label class="sw" for="sw-sound"><span class="sw-text">Sound <kbd>M</kbd></span><input type="checkbox" role="switch" id="sw-sound" data-set="sound"><span class="sw-track" aria-hidden="true"></span></label>
+        <div class="slider">
+          <label for="rg-glow">Glow</label><output id="out-glow" for="rg-glow"></output>
+          <input type="range" id="rg-glow" min="0" max="150" step="5" data-set="glow">
+        </div>
+      </fieldset>
+
+      <div class="deck-actions">
+        <button class="btn sm" type="button" data-act="pulse"><span class="btn-face">Send a pulse <kbd>P</kbd></span></button>
+        <button class="btn sm" type="button" data-act="game"><span class="btn-face">Play trail duel <kbd>X</kbd></span></button>
+        <button class="btn sm" type="button" data-act="console"><span class="btn-face">Open the console <kbd>/</kbd></span></button>
+        <button class="btn sm" type="button" data-act="intro"><span class="btn-face">Replay the intro</span></button>
+        <button class="btn sm quiet" type="button" data-act="reset"><span class="btn-face">Reset the deck</span></button>
+      </div>
+    </div>
+  </div></div>
+</aside>
+
+<!-- Console -->
+<section class="console" id="console" role="dialog" aria-labelledby="console-title">
+  <div class="plate"><div class="plate-in">
+    <header class="console-head">
+      <h2 class="console-title" id="console-title">Console</h2>
+      <span class="console-tip">Type help, then press Enter</span>
+      <button class="icon-btn" type="button" data-act="console" aria-label="Close the console">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+      </button>
+    </header>
+    <div class="console-out" id="console-out" role="log" aria-live="polite" tabindex="0" aria-label="Console output"></div>
+    <form class="console-in" id="console-form" autocomplete="off">
+      <label class="prompt" for="console-input" id="console-prompt">guest:~$</label>
+      <input id="console-input" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="send">
+    </form>
+  </div></div>
+</section>
+
+<!-- Trail duel -->
+<div class="modal" id="game" role="dialog" aria-modal="true" aria-labelledby="game-title" hidden>
+  <div class="game plate"><div class="plate-in game-in">
+    <header class="game-head">
+      <h2 id="game-title">Trail duel</h2>
+      <dl class="game-hud">
+        <div><dt>Round</dt><dd id="g-round">1</dd></div>
+        <div><dt>Streak</dt><dd id="g-streak">0</dd></div>
+        <div><dt>Best</dt><dd id="g-best">0</dd></div>
+      </dl>
+      <button class="icon-btn" type="button" data-act="game-close" aria-label="Close trail duel">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+      </button>
+    </header>
+    <div class="game-stage" id="game-stage">
+      <canvas id="game-canvas"></canvas>
+      <div class="game-msg" id="game-msg" data-mode="menu">
+        <p class="game-big" id="game-big" aria-live="assertive">Trail duel</p>
+        <p class="game-sub" id="game-sub">Steer your line of light. Hit a wall or any trail and you're out. Last one moving wins the round.</p>
+        <button class="btn solid" type="button" id="game-go"><span class="btn-face">Start the round</span></button>
+      </div>
+    </div>
+    <footer class="game-foot">
+      <p class="game-keys">Steer with the arrow keys or WASD. Space starts a round. Esc closes.</p>
+      <div class="game-touch">
+        <button class="btn sm" type="button" id="g-left"><span class="btn-face">Turn left</span></button>
+        <button class="btn sm" type="button" id="g-right"><span class="btn-face">Turn right</span></button>
+      </div>
+    </footer>
+  </div></div>
+</div>
+
+<!-- Photo viewer -->
+<div class="modal lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+  <button class="icon-btn lb-close" type="button" id="lb-close" aria-label="Close the photo">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+  </button>
+  <button class="icon-btn lb-nav" type="button" id="lb-prev" aria-label="Previous photo">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+  </button>
+  <figure class="lb-figure">
+    <div class="lb-frame" id="lb-frame"><img id="lb-img" alt=""></div>
+    <figcaption class="lb-cap"><span id="lb-count"></span><span id="lb-text"></span><span id="lb-date"></span></figcaption>
+  </figure>
+  <button class="icon-btn lb-nav" type="button" id="lb-next" aria-label="Next photo">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+  </button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript><p class="noscript">This page needs JavaScript to draw the roster, the photos and the mission log.</p></noscript>
+
+<script src="js/data.js?v=1"></script>
+<script src="js/fx.js?v=1"></script>
+<script src="js/game.js?v=1"></script>
+<script src="js/app.js?v=1"></script>
+</body>
+</html>
