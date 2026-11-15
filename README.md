@@ -33,3 +33,12 @@ After a change, bump the `?v=` number on the stylesheet and script tags in `inde
 - `fonts/`: Michroma, Jura and Share Tech Mono, each under the SIL Open Font License (license files included).
 
 No build step. Any static host can serve the folder as it is.
+
+## Publishing
+
+GitHub Pages serves the `gh-pages` branch. `main` holds the same files, so push every change to both:
+
+```
+git push origin main
+git push origin main:gh-pages
+```
