@@ -102,7 +102,7 @@
     $("#updated").textContent = SITE.updated ? `Last updated ${fmtDate(SITE.updated, true)}.` : "";
 
     $("#readouts").innerHTML =
-      `<div class="readout"><dd data-n="${members.length}">00</dd><dt>${plural(members.length, "member")}</dt></div>` +
+      `<div class="readout"><dd data-n="${crew.length}">00</dd><dt>${plural(crew.length, "member")}</dt></div>` +
       `<div class="readout"><dd data-n="${missions.length}">00</dd><dt>${plural(missions.length, "mission")}</dt></div>` +
       `<div class="readout"><dd data-n="${earned}">00</dd><dt>points earned${inPlay ? ` <small>+${inPlay} in play</small>` : ""}</dt></div>`;
     const delay = root.classList.contains("no-intro") ? 250 : 1250;
@@ -135,10 +135,10 @@
   /* ---------- roster ---------- */
   function renderRoster() {
     const open = crew.length - members.length;
-    $("#roster-note").textContent = `${members.length} ${plural(members.length, "member")}${open ? `, ${open} open ${plural(open, "slot")}` : ""}`;
-    $("#roster-list").innerHTML = crew.map((m) => {
+    $("#roster-note").textContent = `${crew.length} ${plural(crew.length, "member")}${open ? `, ${open} still to be named` : ""}`;
+    $("#roster-list").innerHTML = crew.map((m, n) => {
       if (m.open) {
-        return `<li class="card is-open"><div class="plate"><div class="plate-in"><div class="avatar">${OPEN_SVG}</div><h3 class="card-name">Open slot</h3><p class="card-about">Saved for the next member.</p></div></div></li>`;
+        return `<li class="card is-open"><div class="plate"><div class="plate-in"><div class="avatar">${OPEN_SVG}</div><h3 class="card-name">Member ${n + 1}</h3><p class="card-about">Name coming soon.</p></div></div></li>`;
       }
       const avatar = m.photo
         ? `<img src="${esc(m.photo)}" alt="Portrait of ${esc(m.name)}" loading="lazy" decoding="async">${FRAME_SVG}`
@@ -515,8 +515,8 @@
     } },
     roster: { about: "Show the members", run() {
       const open = crew.length - members.length;
-      say(`Roster: ${members.length} ${plural(members.length, "member")}${open ? `, ${open} open ${plural(open, "slot")}` : ""}`);
-      members.forEach((m, i) => say(`  ${pad2(i + 1)}  ${m.name}${m.role ? ", " + m.role : ""}`));
+      say(`Roster: ${crew.length} ${plural(crew.length, "member")}${open ? `, ${open} still to be named` : ""}`);
+      crew.forEach((m, i) => say(`  ${pad2(i + 1)}  ${m.open ? "name coming soon" : m.name + (m.role ? ", " + m.role : "")}`));
     } },
     missions: { about: "Show the mission log", run() {
       if (!missions.length) return say("No missions logged yet.");

@@ -1,6 +1,6 @@
-# Family Site
+# Mexican Platypus
 
-Our family's page for Mission 7: the roster, the photos and the mission log.
+The Mexican Platypus family page, built for Mission 7: the roster, the photos and the mission log.
 
 Live at https://aarush35.github.io/family_site/
 
@@ -9,7 +9,7 @@ Live at https://aarush35.github.io/family_site/
 Everything on the page is drawn from one file, `js/data.js`.
 
 - **Family name and tagline:** the first two lines.
-- **Roster:** one entry per member in `crew`. Only `name` is required. Add `role`, `about`, a `photo` path and `links` when you have them. `{ open: true }` draws an empty slot.
+- **Roster:** one entry per member in `crew`. Only `name` is required. Add `role`, `about`, a `photo` path and `links` when you have them. `{ open: true }` holds the place of a member who isn't named yet.
 - **Photos:** put the image files in `photos/`, then list them in `photos` with a caption and a date.
 - **Missions:** one entry per mission in `missions`. `status` is `started`, `submitted` or `complete`, and the points tally follows from it.
 

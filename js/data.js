@@ -7,14 +7,16 @@
    Photo files live in the photos/ folder.
    ============================================================ */
 window.SITE = {
-  family: "Family Name",
+  family: "Mexican Platypus",
   tagline: "Our crew, our photos, and every mission we've run.",
   updated: "2026-11-14",
 
-  /* One entry per member. Leave role, about and photo empty until you have them.
-     { open: true } draws an empty slot. */
+  /* One entry per member, six in all. Leave role, about and photo empty until you have them.
+     { open: true } holds the place of a member who isn't named here yet. */
   crew: [
     { name: "Aarush Paraskar", role: "", about: "", photo: "", links: [] },
+    { open: true },
+    { open: true },
     { open: true },
     { open: true },
     { open: true }

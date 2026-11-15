@@ -146,7 +146,7 @@ kbd { display: inline-block; min-width: 21px; padding: 1px 5px; border: 1px soli
 .hero-sky { display: grid; align-items: end; justify-items: center; padding: 28px var(--gutter) 0; }
 .sign {
   grid-area: 1 / 1; max-width: 100%;
-  font: 400 clamp(40px, 10.5vw, 124px)/1.04 var(--f-display); letter-spacing: .02em; text-transform: uppercase; text-align: center;
+  font: 400 clamp(32px, 10.5vw, 124px)/1.04 var(--f-display); letter-spacing: .02em; text-transform: uppercase; text-align: center;
   color: #f5feff;
   text-shadow: 0 0 calc(3px * var(--glow)) #fff, 0 0 calc(14px * var(--glow)) var(--accent), 0 0 calc(40px * var(--glow)) var(--accent), 0 0 calc(90px * var(--glow)) color-mix(in srgb, var(--accent) 60%, transparent);
   cursor: default;
@@ -484,6 +484,14 @@ h1.sign .ch:hover { transform: translateY(-4%); filter: brightness(1.5) drop-sha
   .readouts { gap: 10px; align-self: stretch; }
   .readout { flex: 1 1 0; align-content: start; }
   .readout dt small { display: block; }
+}
+@media (max-width: 380px) {
+  .bar { gap: 8px; }
+  .brand-sigil { width: 30px; height: 30px; }
+  .nav { gap: 10px; font-size: 13.5px; letter-spacing: .01em; }
+  .bar-tools { gap: 6px; }
+  .tool { height: 34px; min-width: 34px; padding: 0 6px; }
+  .tool-wide { padding: 0 6px; }
 }
 @media (hover: none) {
   .shot-cap { opacity: 1; transform: none; }
